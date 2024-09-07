@@ -1,0 +1,78 @@
+@font-face {
+  font-family: RobotoMono;
+  src: url('assets/RobotoMono.ttf');
+}
+
+html, body {
+  overflow: hidden;
+  background-color: black;
+  color: white;
+  font-family: RobotoMono;
+}
+
+li {
+  margin: 10px;
+}
+
+a:link {
+  color: lime;
+  text-decoration: none;
+}
+
+a:hover {
+  color: cyan;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: green;
+  text-decoration: none;
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.codebox {
+  display: block;
+  width: 20%;
+  padding: 5px;
+  background-color: #0c0c0c;
+  border-radius: 5px;
+}
+
+.codebox p {
+  margin: 2px;
+}
+
+/* Typewriter effect */
+.typewriter-container {
+  display: inline-block;
+  margin: 0;
+}
+.typewriter{
+  overflow: hidden;
+  border-right: .15em solid white;
+  white-space: nowrap;
+  animation: 
+    typing 0.5s steps(10, end) forwards,
+    blink 0.8s infinite;
+  animation-delay: 750ms;
+  font-size: 2rem;
+  width: 0;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink {
+  from { border-color: transparent }
+  to { border-color: white; }
+}
