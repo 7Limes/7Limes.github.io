@@ -82,6 +82,7 @@ function windowResized() {
 window.addEventListener('load', function() {
     // Check if user came via back button
     if (performance.getEntriesByType('navigation')[0].type === 'back_forward') {
-        setup();
+        console.log('Navigated using back button. Reloading...')
+        window.location.reload();
     }
 });
