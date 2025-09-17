@@ -77,3 +77,11 @@ function draw() {
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
 }
+
+
+window.addEventListener('load', function() {
+    // Check if user came via back button
+    if (performance.getEntriesByType('navigation')[0].type === 'back_forward') {
+        setup();
+    }
+});
