@@ -11,6 +11,14 @@ html, body {
     color: white
 }
 
+a:visited {
+  color: rgb(182, 182, 182);
+}
+
+a:hover {
+  color: rgb(202, 225, 231)
+}
+
 .noselect {
   -webkit-touch-callout: none;
   -webkit-user-select: none;

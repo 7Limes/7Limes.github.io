@@ -8,14 +8,20 @@ const LINKBOX_DATA = [
 const LINKBOX_X_OFFSET = 300;
 const LINKBOX_Y_OFFSET = 150;
 
-const CAMERA_ANIMATION_DURATION = 30;  // Frames
+const CAMERA_ANIMATION_DURATION = 0.5;  // Seconds
+const RETURN_CAMERA_AFTER = 1.5;
 
 
 let font;
 let linkboxes = [];
 
-let cameraAnimationCount = 0;
+let cameraAnimationTimer = 0;
 let navigating = false;
+
+let returnCameraTimer = -1;
+
+let navigateLink = null;
+let navigatePos = null;
 
 
 function preload() {
@@ -25,6 +31,7 @@ function preload() {
 
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL).parent("canvas-container");
+    frameRate(60);
 
     textFont(font);
     textSize(24);
@@ -51,24 +58,40 @@ function setup() {
 function draw() {
     background(LinkBox.backgroundColor);
 
-    if (LinkBox.navigateLink !== null) {
-        cameraAnimationCount = moveToward(cameraAnimationCount, CAMERA_ANIMATION_DURATION, 1);
-        const ease = easeInOut(cameraAnimationCount / CAMERA_ANIMATION_DURATION);
-        const [navX, navY, navZ] = LinkBox.navigatePos;
+    if (navigateLink !== null) {
+        cameraAnimationTimer = moveToward(cameraAnimationTimer, CAMERA_ANIMATION_DURATION, deltaTime/1000);
+        const ease = easeInOut(cameraAnimationTimer / CAMERA_ANIMATION_DURATION);
+        const [navX, navY, navZ] = navigatePos;
         const cameraPosVector = createVector(0, 0, 0).lerp(navX, navY, navZ, ease);
         const cameraLookVector = createVector(0, 0, LINKBOX_Z).lerp(navX, navY, navZ, ease);
 
         camera(cameraPosVector.x, cameraPosVector.y, cameraPosVector.z, cameraLookVector.x, cameraLookVector.y, cameraLookVector.z);
 
-        if (!navigating && cameraAnimationCount == CAMERA_ANIMATION_DURATION) {
+        if (!navigating && cameraAnimationTimer == CAMERA_ANIMATION_DURATION) {
             navigating = true;
-            window.location.href = LinkBox.navigateLink;
+            window.location.href = navigateLink;
+            returnCameraTimer = 0;
         }
     }
 
-    if (CAMERA_ANIMATION_DURATION - cameraAnimationCount > 7) {  // Don't draw during the last few frames
+    if (CAMERA_ANIMATION_DURATION - cameraAnimationTimer > 0.1) {  // Don't draw during the last few frames
         for (const linkbox of linkboxes) {
-            linkbox.draw();
+            let boxResult = linkbox.update();
+            if (boxResult != null) {
+                navigateLink = boxResult.navigateLink;
+                navigatePos = boxResult.navigatePos;
+            }
+        }
+    }
+
+    if (returnCameraTimer != -1) {
+        returnCameraTimer = moveToward(returnCameraTimer, RETURN_CAMERA_AFTER, deltaTime/1000);
+        if (returnCameraTimer == RETURN_CAMERA_AFTER) {
+            navigateLink = null;
+            cameraAnimationTimer = 0;
+            returnCameraTimer = -1;
+            navigating = false;
+            camera(0, 0, 0, 0, 0, -800);
         }
     }
 }
@@ -81,6 +104,7 @@ function windowResized() {
 
 window.addEventListener('load', function() {
     // Check if user came via back button
+    console.log(performance.getEntriesByType('navigation')[0].type);
     if (performance.getEntriesByType('navigation')[0].type === 'back_forward') {
         console.log('Navigated using back button. Reloading...')
         window.location.reload();

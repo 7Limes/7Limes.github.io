@@ -1,13 +1,11 @@
 const LINKBOX_Z = -800;
 const LINKBOX_SIZE = 150;
 
-const HOVER_ANIMATION_DURATION = 45  // Frames
+const HOVER_ANIMATION_DURATION = 0.75;
 
 
 class LinkBox {
     static backgroundColor = [220, 220, 220];
-    static navigateLink = null;
-    static navigatePos;
     
     constructor(x, y, oscillateOffset, quadrant, text, link, color) {
         this.x = x;
@@ -19,7 +17,7 @@ class LinkBox {
         this.link = link;
         this.color = color
 
-        this.animationCount = 0;
+        this.animationTimer = 0;
     }
 
 
@@ -37,7 +35,7 @@ class LinkBox {
     }
 
 
-    draw() {
+    update() {
         const isHovered = this.isHovered();
         const windowWidthFactor = map(windowWidth, 1920, 300, 1.0, 0.25);
         const windowHeightFactor = map(windowHeight, 1000, 200, 1.0, 0.25);
@@ -50,23 +48,17 @@ class LinkBox {
         const xPosition = this.x * windowWidthFactor;
         const yPosition = (this.y + sin(oscillateValue * 0.02) * 10) * windowHeightFactor;
 
-        // Check if this box was clicked on
-        if (LinkBox.navigateLink === null && isHovered && mouseButton === LEFT) {
-            LinkBox.navigateLink = this.link;
-            LinkBox.navigatePos = [xPosition, yPosition, LINKBOX_Z];
-        }
-
         push();
         translate(xPosition, yPosition, LINKBOX_Z);
 
         // Calculate box rotation
         const toValue = isHovered ? HOVER_ANIMATION_DURATION : 0;
-        this.animationCount = moveToward(this.animationCount, toValue, 1);
+        this.animationTimer = moveToward(this.animationTimer, toValue, deltaTime/1000);
         
         const angleToCameraXZ = atan2(xPosition, LINKBOX_Z);
         const angleToCameraYZ = atan2(yPosition, LINKBOX_Z);
         
-        const ease = easeInOut(this.animationCount / HOVER_ANIMATION_DURATION);
+        const ease = easeInOut(this.animationTimer / HOVER_ANIMATION_DURATION);
         const yRotation = angleToCameraXZ * ease;
         const xRotation = angleToCameraYZ * ease;
 
@@ -93,5 +85,15 @@ class LinkBox {
         text(this.text, 0, 0);
 
         pop();
+
+        // Check if this box was clicked on
+        if (isHovered && mouseIsPressed && mouseButton === LEFT) {
+            return {
+                navigateLink: this.link,
+                navigatePos: [xPosition, yPosition, LINKBOX_Z]
+            }
+        }
+
+        return null;
     }
 }
