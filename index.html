@@ -1,21 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Limes</title>
+    <title>Miles</title>
 
     <link rel="stylesheet" type="text/css" href="style.css">
-    <script src="src/libraries/p5.min.js"></script>
   </head>
 
   <body>
-    <h1 class="noselect header" style="position: absolute">Limes</h1>
-    <div id="canvas-container"></div>
+    <header>
+      <h1 class="noselect">Miles</h1>
+      <p class="subtitle">Software Developer &amp; CS Student at Florida State University</p>
+      <nav>
+        <a id="github-link" href="https://github.com/7Limes" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+        </a>
+        <button id="dark-toggle" class="noselect">dark</button>
+      </nav>
+    </header>
 
-    <script src="src/util.js"></script>
-    <script src="src/box.js"></script>
-    <script src="src/sketch.js"></script>
+    <main class="split-layout">
+      <aside class="skill-list noselect">
+        <p class="skill-list-label">Areas</p>
+        <ul id="skill-items">
+          <li class="skill-item active" data-key="low-level">Low Level / Systems</li>
+          <li class="skill-item" data-key="web">Web & Full Stack Development</li>
+          <li class="skill-item" data-key="game">Game Development</li>
+          <li class="skill-item" data-key="compilers">Compilers &amp; VMs</li>
+          <li class="skill-item" data-key="tools">Tools &amp; Libraries</li>
+          <li class="skill-item" data-key="misc">Miscellaneous</li>
+        </ul>
+      </aside>
+
+      <section class="project-panel">
+        <div id="project-display"></div>
+      </section>
+    </main>
+
+    <script>
+      const data = {
+        "low-level": {
+          label: "Low Level / Systems",
+          description: "C and C++ development, low level tools, and systems programming.",
+          projects: [
+            { title: "cg2", url: "https://github.com/7Limes/cg2", desc: "A minimal ISA with bundled graphics, implemented as a C virtual machine.", tags: ["C", "ISA", "VM"] },
+            { title: "cg1", url: "https://github.com/7Limes/cg1", desc: "The precursor to g2 with a larger instruction set.", tags: ["C", "ISA", "VM"] },
+            { title: "std", url: "https://github.com/7Limes/std", desc: "A collection of dynamic data structures implemented in C.", tags: ["C", "Library"] },
+            { title: "CHIP8-g1", url: "https://github.com/7Limes/CHIP8-g1", desc: "A CHIP-8 emulator that runs on the g1 architecture.", tags: ["C", "Emulator"] },
+            { title: "2col", url: "https://github.com/7Limes/2col-cpp", desc: "A minimal stack oriented language for code golfing.", tags: ["C++", "Interpreter"] },
+          ]
+        },
+        "web": {
+          label: "Web & Full Stack Development",
+          description: "Backend APIs with Flask, and full-stack work with HTML, CSS, and JS.",
+          projects: [
+            { title: "This site", url: "https://github.com/7Limes/7Limes.github.io", desc: "A minimal personal portfolio (you're looking at it)", tags: ["HTML", "CSS", "JavaScript"] },
+            { title: "Learning Management System", url: "https://github.com/7Limes/COP4870-LMS", desc: "A fully featured learning management system.", tags: ["C#", "Avalonia", "ASP.NET"] },
+            { title: "IDS2141 Journal Site", url: "https://github.com/7Limes/IDS2141-site", desc: "A site containing my journal entries for IDS2141.", tags: ["Python", "Flask", "Markdown"] },
+            { title: "Programming History Site", url: "https://7limes.github.io/ENC2135-Project-3-Site/", desc: "A site showcasing the history of programming language design.", tags: ["HTML", "CSS", "JavaScript"] },
+            { title: "Bytewise", url: "https://7limes.github.io/bytewise-site/", desc: "A basic website for a hypothetical code tutoring company.", tags: ["HTML", "CSS"] },
+          ]
+        },
+        "game": {
+          label: "Game Development",
+          description: "Game projects using Unity, Godot, Pygame, and more.",
+          projects: [
+              { title: "Dawn of Dion", url: "https://jake0822.itch.io/dawn-of-dion", desc: "A 3D platformer built in Unity by FSU students (Fall 2025 - Spring 2026).", tags: ["C#", "Unity"] },
+            { title: "Orbital Odyssey", url: "https://github.com/devlup-fsu/party-game", desc: "A four-player party game built in Godot by FSU students (Fall 2024 - Spring 2025).", tags: ["GDScript", "Godot"] },
+            { title: "Frostlit", url: "https://github.com/7Limes/Frostlit", desc: "A short horror experience in a frozen environment.", tags: ["GDScript", "Godot"] },
+            { title: "VR Mage Sandbox", url: "https://github.com/7Limes/VRMageSandbox", desc: "A magic sandbox game with a flexible spellcrafting system.", tags: ["C#", "Unity", "VR"] },
+            { title: "Masteroids", url: "https://github.com/7Limes/Masteroids", desc: "An Asteroids-like game with some roguelike twists.", tags: ["Python", "Pygame"] },
+            { title: "C.H.A.D", url: "https://github.com/7Limes/CHAD", desc: "A survival game with a dog theme. ", tags: ["Odin", "Raylib"] },
+            { title: "Gunpowder Grotto", url: "https://github.com/7Limes/Gunpowder-Grotto", desc: "A 2D platformer built from scratch using p5.js.", tags: ["JavaScript", "p5.js"] },
+            { title: "Pyjoust", url: "https://github.com/7Limes/pyjoust", desc: "A faithful clone of the classic arcade game Joust made with Pygame.", tags: ["Python", "Pygame"] },
+          ]
+        },
+        "compilers": {
+          label: "Compilers & Assemblers",
+          description: "Compiler frontends, assemblers, and virtual machine implementations.",
+          projects: [
+            { title: "Dry", url: "https://github.com/7Limes/dry", desc: "A low level programming language that compiles to g2 assembly.", tags: ["C", "Compiler"] },
+            { title: "mlg1", url: "https://github.com/7Limes/mlg1", desc: "A mid level C-like language that compiles to g1 assembly.", tags: ["Python", "ANTLR4", "Compiler"] },
+            { title: "g1js", url: "https://github.com/7Limes/g1js", desc: "JavaScript virtual machine for the g1 architecture.", tags: ["JavaScript", "VM"] },
+            { title: "g2asm", url: "https://github.com/7Limes/g2asm", desc: "The assembler for g2 assembly programs, written in Python.", tags: ["Python", "Assembler"] },
+            { title: "g1asm", url: "https://github.com/7Limes/g1asm", desc: "The assembler for g1 assembly programs, written in Python.", tags: ["Python", "Assembler"] },
+          ]
+        },
+        "tools": {
+          label: "Tools & Libraries",
+          description: "Python packages, metaprogramming utilities, and published modules.",
+          projects: [
+            { title: "spar", url: "https://github.com/7Limes/spar", desc: "A small and portable 2D particle library written from scratch in C.", tags: ["C", "Library"] },
+            { title: "saii", url: "https://github.com/7Limes/saii", desc: "A Simple AppImage Installer.", tags: ["Python", "AppImage", "Linux"] },
+          ]
+        },
+        "misc": {
+          label: "Miscellaneous Projects",
+          description: "Some other miscellaneous or unrelated projects.",
+          projects: [
+            { title: "p5 Particles", url: "https://7limes.github.io/p5particles/", desc: "An interactive particle playground made with p5.", tags: ["JavaScript", "p5.js"] },
+            { title: "p5 Asteroids", url: "https://github.com/7Limes/p5asteroids", desc: "A barebones Asteroids clone.", tags: ["JavaScript", "p5.js"] },
+          ]
+        },
+      };
+
+      // Maps tag name to one of three color kinds: lang, tool, type
+      const tagKinds = {
+        "C": "lang", "C++": "lang", "C#": "lang", "Python": "lang",
+        "JavaScript": "lang", "GDScript": "lang", "HTML": "lang", "CSS": "lang", "Odin": "lang",
+        "p5.js": "tool", "Pygame": "tool", "Godot": "tool", "Unity": "tool", "ANTLR4": "tool", "Raylib": "tool", "Flask": "tool", "Avalonia": "tool", "ASP.NET": "tool",
+        "VM": "type", "Compiler": "type", "Assembler": "type", "ISA": "type",
+        "Emulator": "type", "Library": "type",
+      };
+
+      function renderProjects(key) {
+        const entry = data[key];
+        const display = document.getElementById("project-display");
+
+        const projectsHTML = entry.projects.map(p => {
+          const tagsHTML = (p.tags || []).map(t =>
+            `<span class="tag tag-${tagKinds[t] || 'type'}">${t}</span>`
+          ).join("");
+          return `
+          <a class="project-card" href="${p.url}" target="_blank" rel="noopener noreferrer">
+            <span class="project-card-title">${p.title}</span>
+            <span class="project-card-tags">${tagsHTML}</span>
+            <span class="project-card-desc">${p.desc}</span>
+          </a>`;
+        }).join("");
+
+        display.innerHTML = `
+          <div class="panel-header">
+            <h2>${entry.label}</h2>
+            <p>${entry.description}</p>
+          </div>
+          <div class="project-cards">${projectsHTML}</div>
+        `;
+      }
+
+      const items = document.querySelectorAll(".skill-item");
+      items.forEach(item => {
+        item.addEventListener("click", () => {
+          items.forEach(i => i.classList.remove("active"));
+          item.classList.add("active");
+          renderProjects(item.dataset.key);
+        });
+      });
+
+      // Render the default (first active) item
+      renderProjects("low-level");
+
+      const toggle = document.getElementById("dark-toggle");
+      const root = document.documentElement;
+      const saved = localStorage.getItem("theme");
+      if (saved === "dark") { root.classList.add("dark"); toggle.textContent = "light"; }
+
+      toggle.addEventListener("click", () => {
+        const dark = root.classList.toggle("dark");
+        toggle.textContent = dark ? "light" : "dark";
+        localStorage.setItem("theme", dark ? "dark" : "light");
+      });
+    </script>
   </body>
 </html>
